@@ -14,13 +14,22 @@ This is the simple example of google pubsub implementation with graphql subscrip
 * Create python environment using venv
 ```
 $ python3 -m venv venv
+
+```
+* activate the venv environment
+```linux
+$ source venv/bin/activate
+
+```
+* install the packages
+```
 $ pip install -r requirements.txt
 
 ```
 
+
 * Run the application
 ```
-#development
 $ uvicorn app:app --reload
 
 ```

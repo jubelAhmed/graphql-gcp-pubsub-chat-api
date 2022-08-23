@@ -121,7 +121,6 @@ def consumePayloadAsync(queues):
 from asgiref.sync import sync_to_async
 
 def blocking_function(seconds: int,subscriber,subscription_path):
-    # time.sleep(seconds)
     try:
         response = subscriber.pull(
             request={"subscription": subscription_path, "max_messages": NUM_MESSAGES}, retry=retry.Retry(deadline=300),
@@ -134,34 +133,14 @@ def blocking_function(seconds: int,subscriber,subscription_path):
 @subscription.source("messages")
 @convert_kwargs_to_snake_case        
 async def messages_source(obj, info, user_id):
-    
-    
     while True:
-      
-        print("looping")
-   
-        # subscriber = pubsub_v1.SubscriberClient() 
-        
-        # The subscriber pulls a specific number of messages. The actual
-        # number of messages pulled may be smaller than max_messages.
         with  pubsub_v1.SubscriberClient() as subscriber:
             subscription_path = subscriber.subscription_path(project_id, subscription_id)
             response = {}
-            # try:
-            #     response = subscriber.pull(
-            #         request={"subscription": subscription_path, "max_messages": NUM_MESSAGES}, retry=retry.Retry(deadline=300),
-            #     )
-            # except Exception as e:
-            #     print(e)
             response = await sync_to_async(blocking_function)(2,subscriber,subscription_path)
             
             if not "received_messages" in response or len(response.received_messages) == 0:
-                time.sleep(3)
                 continue
-            print("response")
-            print(response)
-            # if len(response.received_messages) == 0:
-            #     return
 
             ack_ids = []
             messages = []
@@ -185,13 +164,9 @@ async def messages_source(obj, info, user_id):
                 f"Received and acknowledged {len(response.received_messages)} messages from {subscription_path}."
             )
             
-        
             for message in messages:
                 if message["recipient_id"] == user_id:
                     yield message
-                    await asyncio.sleep(3)
-        print("sad")
-        await asyncio.sleep(3)
     
 @subscription.field("messages")
 @convert_kwargs_to_snake_case

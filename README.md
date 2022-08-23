@@ -1,4 +1,4 @@
-# Project Title
+# Graphql Chat Api
 
 ## Table of Contents
 
